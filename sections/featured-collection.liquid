@@ -10,18 +10,34 @@
 
 {%- unless section.settings.quick_add == 'none' -%}
   {{ 'quick-add.css' | asset_url | stylesheet_tag }}
-  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+
+  {% if template contains 'index' or template contains 'product' or template contains 'collection' %}
+    <script type="noscript-s" data-src="{{ 'product-form.js' | asset_url }}"></script>
+  {% else %}
+    <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+  {% endif %}
 {%- endunless -%}
 
 {%- if section.settings.quick_add == 'standard' -%}
-  <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+  {% if template contains 'index' or template contains 'product' or template contains 'collection' %}
+    <script type="noscript-s" data-src="{{ 'quick-add.js' | asset_url }}"></script>
+  {% else %}
+    <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+  {% endif %}
 {%- endif -%}
 
 {%- if section.settings.quick_add == 'bulk' -%}
-  <script src="{{ 'quick-add-bulk.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'quick-order-list.js' | asset_url }}" defer="defer"></script>
+  {% if template contains 'index' or template contains 'product' or template contains 'collection' %}
+    <script type="noscript-s" data-src="{{ 'quick-add-bulk.js' | asset_url }}"></script>
+    <script type="noscript-s" data-src="{{ 'quantity-popover.js' | asset_url }}"></script>
+    <script type="noscript-s" data-src="{{ 'price-per-item.js' | asset_url }}"></script>
+    <script type="noscript-s" data-src="{{ 'quick-order-list.js' | asset_url }}"></script>
+  {% else %}
+    <script src="{{ 'quick-add-bulk.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'quick-order-list.js' | asset_url }}" defer="defer"></script>
+  {% endif %}
 {%- endif -%}
 
 {%- style -%}

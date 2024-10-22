@@ -1,6 +1,51 @@
+{% comment %}
+  This code is setting a variable named "speedupkernel" to the value "true".
+  It's then checking if the hostname of the request contains certain strings
+  such as 'myshopify.com', 'gempages.net' or 'shopifypreview.com', and sets
+  the variable 'is_admin_interface' to either "true" or "false".
+  It also checks for specific paths in the request like '/cart' and '/checkout'
+  which will set is_admin_interface to "true". Finally, if the request.path
+  contains the string 'page', it sets the speedupkernel variable back to false.
+{% endcomment %}
+
+{%- assign speedupkernel = true -%}
+{%- assign is_admin_interface = false -%}
+
+{%- if speedupkernel -%}
+  {%- if request.host contains 'myshopify.com' -%}
+    {%- assign is_admin_interface = true -%}
+  {%- else -%}
+    {%- assign is_admin_interface = false -%}
+  {%- endif -%}
+
+  {%- if request.host contains 'shopifypreview.com' -%}
+    {%- assign is_admin_interface = false -%}
+  {%- endif -%}
+
+  {%- if request.host contains 'gempages.net' -%}
+    {%- assign is_admin_interface = true -%}
+  {%- endif -%}
+
+  {%- if request.path contains 'cart' -%}
+    {%- assign is_admin_interface = true -%}
+  {%- endif -%}
+
+  {%- if request.path contains 'checkout' -%}
+    {%- assign is_admin_interface = true -%}
+  {%- endif -%}
+
+  {%- if request.path contains 'page' -%}
+    {%- assign speedupkernel = false -%}
+  {%- endif -%}
+{%- endif -%}
+
 <!doctype html>
 <html class="js" lang="{{ request.locale.iso_code }}">
   <head>
+    {% unless is_admin_interface %}
+      {% render '__opt-theme-observer' %}
+    {% endunless %}
+    {% include '__opt-theme-headers' %}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -28,15 +73,28 @@
 
     {% render 'meta-tags' %}
 
-    <script src="{{ 'constants.js' | asset_url }}" defer="defer"></script>
-    <script src="{{ 'pubsub.js' | asset_url }}" defer="defer"></script>
-    <script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
-    <script src="{{ 'details-disclosure.js' | asset_url }}" defer="defer"></script>
-    <script src="{{ 'details-modal.js' | asset_url }}" defer="defer"></script>
-    <script src="{{ 'search-form.js' | asset_url }}" defer="defer"></script>
+    {% if template contains 'index' or template contains 'product' or template contains 'collection' %}
+      <script type="noscript-s" data-src="{{ 'constants.js' | asset_url }}"></script>
+      <script type="noscript-s" data-src="{{ 'pubsub.js' | asset_url }}"></script>
+      <script type="noscript-s" data-src="{{ 'global.js' | asset_url }}"></script>
+      <script type="noscript-s" data-src="{{ 'details-disclosure.js' | asset_url }}"></script>
+      <script type="noscript-s" data-src="{{ 'details-modal.js' | asset_url }}"></script>
+      <script type="noscript-s" data-src="{{ 'search-form.js' | asset_url }}"></script>
+    {% else %}
+      <script src="{{ 'constants.js' | asset_url }}" defer="defer"></script>
+      <script src="{{ 'pubsub.js' | asset_url }}" defer="defer"></script>
+      <script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
+      <script src="{{ 'details-disclosure.js' | asset_url }}" defer="defer"></script>
+      <script src="{{ 'details-modal.js' | asset_url }}" defer="defer"></script>
+      <script src="{{ 'search-form.js' | asset_url }}" defer="defer"></script>
+    {% endif %}
 
     {%- if settings.animations_reveal_on_scroll -%}
-      <script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>
+      {% if template contains 'index' or template contains 'product' or template contains 'collection' %}
+        <script type="noscript-s" data-src="{{ 'animations.js' | asset_url }}"></script>
+      {% else %}
+        <script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>
+      {% endif %}
     {%- endif -%}
 
     {{ content_for_header }}
@@ -279,7 +337,12 @@
 
     {%- if localization.available_countries.size > 1 or localization.available_languages.size > 1 -%}
       {{ 'component-localization-form.css' | asset_url | stylesheet_tag: preload: true }}
-      <script src="{{ 'localization-form.js' | asset_url }}" defer="defer"></script>
+
+      {% if template contains 'index' or template contains 'product' or template contains 'collection' %}
+        <script type="noscript-s" data-src="{{ 'localization-form.js' | asset_url }}"></script>
+      {% else %}
+        <script src="{{ 'localization-form.js' | asset_url }}" defer="defer"></script>
+      {% endif %}
     {%- endif -%}
 
     {%- if settings.predictive_search_enabled -%}
@@ -291,7 +354,11 @@
       >
     {%- endif -%}
 
-    <script>
+    <script
+      {% if template contains 'index' or template contains 'product' or template contains 'collection' %}
+        type="noscript-s"
+      {% endif %}
+    >
       if (Shopify.designMode) {
         document.documentElement.classList.add('shopify-design-mode');
       }
@@ -320,7 +387,11 @@
       <li id="a11y-new-window-message">{{ 'accessibility.link_messages.new_window' | t }}</li>
     </ul>
 
-    <script>
+    <script
+      {% if template contains 'index' or template contains 'product' or template contains 'collection' %}
+        type="noscript-s"
+      {% endif %}
+    >
       window.shopUrl = '{{ request.origin }}';
       window.routes = {
         cart_add_url: '{{ routes.cart_add_url }}',
@@ -366,11 +437,20 @@
     </script>
 
     {%- if settings.predictive_search_enabled -%}
-      <script src="{{ 'predictive-search.js' | asset_url }}" defer="defer"></script>
+      {% if template contains 'index' or template contains 'product' or template contains 'collection' %}
+        <script type="noscript-s" data-src="{{ 'predictive-search.js' | asset_url }}"></script>
+      {% else %}
+        <script src="{{ 'predictive-search.js' | asset_url }}" defer="defer"></script>
+      {% endif %}
     {%- endif -%}
 
     {%- if settings.cart_type == 'drawer' -%}
-      <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
+      {% if template contains 'index' or template contains 'product' or template contains 'collection' %}
+        <script type="noscript-s" data-src="{{ 'cart-drawer.js' | asset_url }}"></script>
+      {% else %}
+        <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
+      {% endif %}
     {%- endif -%}
+    {% render '__opt-theme-js' %}
   </body>
 </html>

@@ -107,7 +107,11 @@
               </div>
             {%- endif -%}
 
-            <script src="{{ 'show-more.js' | asset_url }}" defer="defer"></script>
+            {% if template contains 'index' or template contains 'product' or template contains 'collection' %}
+              <script type="noscript-s" data-src="{{ 'show-more.js' | asset_url }}"></script>
+            {% else %}
+              <script src="{{ 'show-more.js' | asset_url }}" defer="defer"></script>
+            {% endif %}
             {% comment %} Filters for both horizontal and vertical filter {% endcomment %}
             {%- for filter in results.filters -%}
               {% liquid

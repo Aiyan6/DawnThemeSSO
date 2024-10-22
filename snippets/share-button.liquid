@@ -10,7 +10,11 @@
     share_link: share_url
   %}
 {% endcomment %}
-<script src="{{ 'share.js' | asset_url }}" defer="defer"></script>
+{% if template contains 'index' or template contains 'product' or template contains 'collection' %}
+  <script type="noscript-s" data-src="{{ 'share.js' | asset_url }}"></script>
+{% else %}
+  <script src="{{ 'share.js' | asset_url }}" defer="defer"></script>
+{% endif %}
 
 <share-button id="Share-{{ section.id }}" class="share-button quick-add-hidden" {{ block.shopify_attributes }}>
   <button class="share-button__button hidden">

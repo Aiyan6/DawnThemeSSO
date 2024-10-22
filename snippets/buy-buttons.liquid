@@ -146,6 +146,10 @@
       </template>
     </pickup-availability>
 
-    <script src="{{ 'pickup-availability.js' | asset_url }}" defer="defer"></script>
+    {% if template contains 'index' or template contains 'product' or template contains 'collection' %}
+      <script type="noscript-s" data-src="{{ 'pickup-availability.js' | asset_url }}"></script>
+    {% else %}
+      <script src="{{ 'pickup-availability.js' | asset_url }}" defer="defer"></script>
+    {% endif %}
   {%- endif -%}
 </div>
